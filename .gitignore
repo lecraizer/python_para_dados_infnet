@@ -1,6 +1,9 @@
 # Pasta locais
 _next/
 
+# Arquivos de enunciado
+[[]ENUNCIADO[]]*.ipynb
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
