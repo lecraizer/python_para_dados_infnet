@@ -1,6 +1,9 @@
 # Next.js
 _next/
 
+# Pasta de jogadores dos alunos
+jogadores_alunos/
+
 # Notebooks
 [[]ENUNCIADO[]]*.ipynb
 .ipynb_checkpoints/
