@@ -1,3 +1,6 @@
+# Pasta locais
+_next/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
