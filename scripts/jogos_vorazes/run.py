@@ -5,18 +5,13 @@ import time
 # Módulos de jogadores
 import jogadores.kamikaze as kamikaze
 import jogadores.arriscado as arriscado
-import jogadores.arthur as arthur
 import jogadores.coringa as coringa
-import jogadores.luis_augusto as luis_augusto
-import jogadores.matheus_gontijo as matheus_gontijo
-import jogadores.inacios as inacios
 import jogadores.escudo as escudo
 import jogadores.fada as fada
-import jogadores.fernando as fernando
-import jogadores.francisco_de_assis as francisco_de_assis
-import jogadores.leandro as leandro
-import jogadores.luan as luan
-import jogadores.nicolas as nicolas
+import jogadores.ana as ana
+import jogadores.carlos as carlos
+import jogadores.joao as joao
+import jogadores.pedro as pedro
 
 
 # Função para criar um jogador
@@ -116,18 +111,14 @@ def jogo():
     # Cria jogadores fictícios com suas respectivas estratégias
     jogadores.append(criar_jogador("Kamikaze", kamikaze.estrategia))
     jogadores.append(criar_jogador("Arriscado", arriscado.estrategia))
-    jogadores.append(criar_jogador("Arthur", arthur.estrategia))
     jogadores.append(criar_jogador("Coringa", coringa.estrategia))
-    jogadores.append(criar_jogador("Luis Augusto", luis_augusto.estrategia))
-    jogadores.append(criar_jogador("Matheus Gontijo", matheus_gontijo.estrategia))
-    jogadores.append(criar_jogador("Inácios", inacios.estrategia))
     jogadores.append(criar_jogador("Escudo", escudo.estrategia))
     jogadores.append(criar_jogador("Fada", fada.estrategia))
-    jogadores.append(criar_jogador("Fernando", fernando.estrategia))
-    jogadores.append(criar_jogador("Francisco de Assis", francisco_de_assis.estrategia))
-    jogadores.append(criar_jogador("Leandro", leandro.estrategia))
-    jogadores.append(criar_jogador("Luan", luan.estrategia))
-    jogadores.append(criar_jogador("Nicolás", nicolas.estrategia))
+    jogadores.append(criar_jogador("Ana", ana.estrategia))
+    jogadores.append(criar_jogador("Carlos", carlos.estrategia))
+    jogadores.append(criar_jogador("João", joao.estrategia))
+    jogadores.append(criar_jogador("Pedro", pedro.estrategia))
+
 
 
     rodada = 1
@@ -163,13 +154,3 @@ def jogo():
 # Executar o jogo
 if __name__ == "__main__": # Linha de execução principal
     jogo()
-
-
-
-### --- Outras possíveis funcionalidades para implementar --- ###
-
-# 1. Função que imprime o estado do jogo a cada N rodadas em ordem decrescente de vida (se possível, sem utilizar a função sort)
-# 2. Atributo de bonus de ataque a cada vez que o jogador mata outro jogador (+10% de dano)
-# 3. Estratégia de ataque arriscado, ou seja, há uma chance do ataque falhar ou então atacar todos os outros jogadores (Pr=0.20 de acertar)
-# 4. Função de cura, que aumenta a vida do jogador em (inteiro aleatório entre +1 e +2)
-# 5. Jogador recebe como parâmetro também o ranking dele em relação aos outros jogadores (no aspecto de vida)
