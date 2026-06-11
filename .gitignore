@@ -1,5 +1,9 @@
 # Next.js
 _next/
+_data/
+_old/
+_html/
+templates/
 
 # Pasta de jogadores dos alunos
 jogadores_alunos/

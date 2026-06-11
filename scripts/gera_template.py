@@ -1,0 +1,52 @@
+import os
+os.makedirs('templates', exist_ok=True)
+
+html_text = '''
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>API de Filmes</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        a {
+            display: block;
+            margin: 12px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <h1>API de Filmes</h1>
+
+    <p>Servidor funcionando.</p>
+
+    <hr width="300">
+
+    <a href="/filmes">Ver todos os filmes</a>
+
+    <a href="/filmes/1">Buscar filme de ID 1</a>
+
+    <a href="/filmes/busca?nome=parasita">
+        Buscar filme por nome
+    </a>
+
+</body>
+
+</html>
+'''
+
+with open('templates/meu_template.html', 'w', encoding='utf-8') as arquivo:
+    arquivo.write(html_text)
+
+print('Arquivo criado com sucesso!')

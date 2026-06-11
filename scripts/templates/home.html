@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>API de Filmes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(120deg, #1f1f1f, #444);
+            color: white;
+            text-align: center;
+            padding: 50px;
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.12);
+            padding: 30px;
+            border-radius: 16px;
+            max-width: 600px;
+            margin: auto;
+        }
+
+        a {
+            display: block;
+            color: #ffd166;
+            margin: 12px;
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        img {
+            width: 220px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Flask_logo.svg" alt="Flask Logo">
+        <h1>API de Filmes</h1>
+        <p>Servidor funcionando!</p>
+
+        <a href="/filmes">Ver todos os filmes</a>
+        <a href="/filmes/1">Buscar filme de ID 1</a>
+        <a href="/filmes/busca?nome=parasita">Buscar filme por nome</a>
+    </div>
+</body>
+</html>
