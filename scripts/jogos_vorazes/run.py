@@ -1,156 +1,246 @@
 # Pacotes gerais
 import random
 import time
-
-# Módulos de jogadores
-import jogadores.kamikaze as kamikaze
-import jogadores.arriscado as arriscado
-import jogadores.coringa as coringa
-import jogadores.escudo as escudo
-import jogadores.fada as fada
-import jogadores.ana as ana
-import jogadores.carlos as carlos
-import jogadores.joao as joao
-import jogadores.pedro as pedro
-
+import os
+import importlib
 
 # Função para criar um jogador
 def criar_jogador(nome, estrategia_func):
     return {
         "nome": nome,
-        "vida": 99,  # Vida inicial
+        "vida": 99,
         "morto": False,
         "defesa": False,
-        "estrategia_func": estrategia_func, # "atacar" ou "defender" ou "curar" ou "atacar_todos"
-        "bonus_ataque": 1.0  # Bônus de ataque inicial
+        "estrategia_func": estrategia_func,
+        "bonus_ataque": 1.0
     }
+
+# Carrega automaticamente todos os jogadores da pasta jogadores/
+def nome_jogador(nome_arquivo):
+    nome = nome_arquivo.replace(".py", "")
+    partes = nome.split("_")
+    return " ".join(parte.title() for parte in partes)
+
+
+def carregar_jogadores():
+    jogadores = []
+
+    for arquivo in os.listdir("jogadores_alunos"):
+
+        if not arquivo.endswith(".py"):
+            continue
+
+        if arquivo == "__init__.py":
+            continue
+
+        nome_modulo = arquivo[:-3]
+
+        try:
+            modulo = importlib.import_module(f"jogadores_alunos.{nome_modulo}")
+
+            jogadores.append(
+                criar_jogador(
+                    nome_jogador(arquivo),
+                    modulo.estrategia
+                )
+            )
+
+        except Exception as e:
+            print(f"Erro ao carregar {arquivo}: {e}")
+
+    return jogadores
 
 
 # Função para aplicar dano a um jogador
 def receber_dano(jogador, dano):
-    if jogador['defesa']:  # Se o jogador estiver defendendo, recebe menos dano
-        dano = dano // 5 # Inteiro da divisão de dano por 5
-        jogador['defesa'] = False # Desabilitar a defesa após o dano ser recebido
 
-    if jogador['vida'] > 0: # Se o jogador ainda estiver vivo
-        jogador['vida'] -= dano  # Aplicar o dano
-        if jogador['vida'] <= 0: # Se o jogador morreu devido ao dano
+    if jogador['defesa']:
+        dano = dano // 5
+        jogador['defesa'] = False
+
+    if jogador['vida'] > 0:
+        jogador['vida'] -= dano
+
+        if jogador['vida'] <= 0:
             jogador['vida'] = 0
             jogador['morto'] = True
             print(f"\nO jogador {jogador['nome']} morreu.")
 
 
-# Função para realizar um ataque de um jogador a outro
+# Função para realizar um ataque
 def atacar(jogador, alvo):
+
     dano = random.randint(1, 6) * jogador['bonus_ataque']
-    dano = int(dano)  # Converter para inteiro
+    dano = int(dano)
+
     receber_dano(alvo, dano)
 
     if alvo['vida'] <= 0:
-        jogador['bonus_ataque'] += 0.1
+
+        jogador['bonus_ataque'] += 0.2
         jogador['bonus_ataque'] = round(jogador['bonus_ataque'], 1)
+
         print(f"O jogador {jogador['nome']} matou o jogador {alvo['nome']}")
         print(f"{jogador['nome']} foi a {jogador['bonus_ataque']:.1f} de dano")
-        
 
-# Função para ativar a defesa de um jogador
+
+# Função para ativar a defesa
 def defender(jogador):
     jogador['defesa'] = True
 
+
+# Função para curar
 def curar(jogador):
+
     jogador['vida'] += random.randint(1, 2)
+
     if jogador['vida'] > 99:
         jogador['vida'] = 99
 
 
+# Ataque em área
 def atacar_todos(jogador, jogadores, p=0.2):
-    # 20% de chance de atacar todos os jogadores
+
     if random.random() < p:
+
         for alvo in [j for j in jogadores if j != jogador and not j['morto']]:
             atacar(jogador, alvo)
 
+
+# Evento de cerco
 def cerco(jogadores, rodada):
-    alvo = random.choice([j for j in jogadores if not j['morto']]) # Escolhe um alvo aleatório que esteja vivo
-    dano_aleatorio = int(random.randint(1, 3)*(rodada/200))
+
+    vivos = [j for j in jogadores if not j['morto']]
+
+    if not vivos:
+        return
+
+    alvo = random.choice(vivos)
+
+    dano_aleatorio = int(random.randint(4, 6) * (rodada / 200))
+
     alvo['vida'] -= dano_aleatorio
-    print(f"\nO jogador {alvo['nome']} receber um dano aleatório de {dano_aleatorio} pelo cerco.".rjust(35))
+
+    print(
+        f"\nO jogador {alvo['nome']} recebeu um dano aleatório de "
+        f"{dano_aleatorio} pelo cerco.".rjust(35)
+    )
+
     if alvo['vida'] <= 0:
+
         alvo['vida'] = 0
         alvo['morto'] = True
+
         print(f"O jogador {alvo['nome']} morreu devido ao cerco.")
-    
 
 
-# Função para realizar a ação de um jogador
+# Realiza a ação de um jogador
 def realizar_acao(jogador, jogadores, rodada, rank):
-    if jogador['morto']: # Se o jogador estiver morto, não fazer nada
-        return
-    
-    # Caso contrário, a função continua (não há necessidade do 'else' por causa do 'return')
 
-    # Chama a função de estratégia do jogador, que recebe 3 parâmetros: vida do jogador, quantidade de jogadores vivos e rodada atual
-    estrategia = jogador['estrategia_func'](jogador['vida'], len([j for j in jogadores if not j['morto']]), rodada)
+    if jogador['morto']:
+        return
+
+    estrategia = jogador['estrategia_func'](
+        jogador['vida'],
+        len([j for j in jogadores if not j['morto']]),
+        rodada
+    )
 
     if estrategia == "atacar":
-        alvo = random.choice([j for j in jogadores if j != jogador and not j['morto']])  # Escolhe um alvo aleatório
-        atacar(jogador, alvo) # Alvo é um jogador (dicionário)
+
+        alvos = [j for j in jogadores if j != jogador and not j['morto']]
+
+        if alvos:
+            alvo = random.choice(alvos)
+            atacar(jogador, alvo)
+
     elif estrategia == "defender":
-        defender(jogador) # Ativa a defesa do jogador
+        defender(jogador)
+
     elif estrategia == "atacar_todos":
-        atacar_todos(jogador, jogadores) # Atacar todos os jogadores com certa probabilidade
+        atacar_todos(jogador, jogadores)
+
     elif estrategia == "curar":
-        curar(jogador) # Cura a vida do jogador
+        curar(jogador)
 
 
-# Função principal para rodar o jogo
+# Função principal
 def jogo():
-    
-    # Inicializa a lista de jogadores
-    jogadores = []
 
-    # Cria jogadores fictícios com suas respectivas estratégias
-    jogadores.append(criar_jogador("Kamikaze", kamikaze.estrategia))
-    jogadores.append(criar_jogador("Arriscado", arriscado.estrategia))
-    jogadores.append(criar_jogador("Coringa", coringa.estrategia))
-    jogadores.append(criar_jogador("Escudo", escudo.estrategia))
-    jogadores.append(criar_jogador("Fada", fada.estrategia))
-    jogadores.append(criar_jogador("Ana", ana.estrategia))
-    jogadores.append(criar_jogador("Carlos", carlos.estrategia))
-    jogadores.append(criar_jogador("João", joao.estrategia))
-    jogadores.append(criar_jogador("Pedro", pedro.estrategia))
+    jogadores = carregar_jogadores()
 
+    print("\nJogadores carregados:")
 
+    for jogador in jogadores:
+        print(f" - {jogador['nome']}")
 
     rodada = 1
-    while len([j for j in jogadores if not j['morto']]) > 1:  # Enquanto mais de 1 jogador estiver vivo
+
+    while len([j for j in jogadores if not j['morto']]) > 1:
         
-        # Parte do código para imprimir o estado do jogo a cada 100 rodadas
-        time.sleep(0.1)
+        if rodada < 500:
+            time.sleep(0.1)
+        if rodada < 1000:
+            time.sleep(0.05)
+        elif rodada < 2000:
+            time.sleep(0.02)
+        else:
+            time.sleep(0.07)
+
         if rodada % 100 == 0:
+
             print(f"\n\n--- Rodada {rodada} ---\n")
-            # Imprimir o estado atual dos jogadores que ainda estão vivos
 
-            jogadores = sorted(jogadores, key=lambda x: x['vida'], reverse=True) # ordena a lista de jogadores (key='HP')
+            jogadores = sorted(
+                jogadores,
+                key=lambda x: x['vida'],
+                reverse=True
+            )
+
             for jogador in jogadores:
-                if not jogador['morto']:
-                    # print nome e vida do jogador, alinhado à direita, em ordem decrescente de vida assim como ataque atual do jogador
-                    print(f"{jogador['nome']}: {jogador['vida']} HP | A: {jogador['bonus_ataque']}".rjust(35))
 
-            # Ataque de dano aleatório a um alvo aleatório
+                if not jogador['morto']:
+
+                    print(
+                        f"{jogador['nome']}: "
+                        f"{jogador['vida']} HP | "
+                        f"A: {jogador['bonus_ataque']}"
+                        .rjust(35)
+                    )
+
             cerco(jogadores, rodada)
 
-        # Para cada jogador, realizar uma ação (defender ou atacar)
-        for jogador in jogadores: 
-            rank = jogadores.index(jogador) # Índice do jogador na lista de jogadores
-            realizar_acao(jogador, jogadores, rodada, rank) # Realiza a ação do jogador
-        
+        for jogador in jogadores:
+
+            rank = jogadores.index(jogador)
+
+            realizar_acao(
+                jogador,
+                jogadores,
+                rodada,
+                rank
+            )
+
         rodada += 1
 
-    # Determinar o vencedor
-    vencedor = [j for j in jogadores if not j['morto']][0] # Pega a lista de jogadores que não estão mortos (cujo tamanho é 1) e pega o idx=0
-    print(f"\n{vencedor['nome']} venceu o jogo com {vencedor['vida']} HP na rodada {rodada}")
+    vencedor = [j for j in jogadores if not j['morto']][0]
+
+    print(
+        f"\n{vencedor['nome']} venceu o jogo "
+        f"com {vencedor['vida']} HP "
+        f"na rodada {rodada}"
+    )
 
 
-# Executar o jogo
-if __name__ == "__main__": # Linha de execução principal
+# Executar
+if __name__ == "__main__":
     jogo()
+
+
+
+# Ataque ter uma probabilidade (ex. 10%) de ser um ataque crítico (1.5x)
+# Probabilidade de escapar do cerco proporcional ao bonus de ataque
+# Magnitude de cura proporcional ao bonus de ataque
+# Eventos aleatórios ao longo do jogo
+# Escolher uma classe (arqueiro, bárbaro, mago/fada, paladino)
+# Criar arquivo de top cercos
